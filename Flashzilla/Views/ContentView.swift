@@ -15,6 +15,7 @@ extension View {
 }
 
 struct ContentView: View {
+    @Environment(\.accessibilityDifferentiateWithoutColor) var differentiateWithoutColour
     @State private var cards = [Card](repeating: Card.example, count: 10)
     
     func removeCard(at index: Int) {
@@ -27,6 +28,25 @@ struct ContentView: View {
                 .resizable()
                 .ignoresSafeArea()
             VStack {
+                if differentiateWithoutColour {
+                    VStack {
+                        Spacer()
+                        HStack {
+                            Image(systemName: "xmark.circle")
+                                .padding()
+                                .background(.black.opacity(0.7))
+                                .clipShape(Circle())
+                            Spacer()
+                            Image(systemName: "checkmark.circle")
+                                .padding()
+                                .background(.black.opacity(0.7))
+                                .clipShape(Circle())
+                        }
+                        .foregroundColor(.white)
+                        .font(.largeTitle)
+                        .padding()
+                    }
+                }
                 ZStack {
                     ForEach(0..<cards.count, id: \.self) { index in
                         CardView(card: cards[index]) {

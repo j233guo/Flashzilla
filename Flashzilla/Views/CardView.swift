@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct CardView: View {
+    @Environment(\.accessibilityDifferentiateWithoutColor) var differentiateWithoutColour
     @State private var isShowingAnswer = false
     @State private var offset = CGSize.zero
     
@@ -17,8 +18,19 @@ struct CardView: View {
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 25, style: .continuous)
-                .fill(.white)
+                .fill(
+                    differentiateWithoutColour
+                    ? .white
+                    : .white
+                        .opacity(1 - Double(abs(offset.width / 50)))
+                )
                 .shadow(radius: 10)
+                .background(
+                    differentiateWithoutColour
+                    ? nil
+                    : RoundedRectangle(cornerRadius: 25, style: .continuous)
+                        .fill(offset.width > 0 ? .green : .red)
+                )
             VStack {
                 Text(card.prompt)
                     .font(.largeTitle)
