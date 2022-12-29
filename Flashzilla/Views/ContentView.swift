@@ -16,7 +16,12 @@ extension View {
 
 struct ContentView: View {
     @Environment(\.accessibilityDifferentiateWithoutColor) var differentiateWithoutColour
+    @Environment(\.scenePhase) var scenePhase
     @State private var cards = [Card](repeating: Card.example, count: 10)
+    @State private var timeRemaining = 100
+    @State private var isActive = true
+    
+    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
     func removeCard(at index: Int) {
         cards.remove(at: index)
@@ -28,6 +33,13 @@ struct ContentView: View {
                 .resizable()
                 .ignoresSafeArea()
             VStack {
+                Text("Time: \(timeRemaining)")
+                    .font(.largeTitle)
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 5)
+                    .background(.black.opacity(0.75))
+                    .clipShape(Capsule())
                 if differentiateWithoutColour {
                     VStack {
                         Spacer()
@@ -58,6 +70,15 @@ struct ContentView: View {
                     }
                 }
             }
+        }
+        .onReceive(timer) { time in
+            if timeRemaining > 0 {
+                guard isActive else { return }
+                timeRemaining -= 1
+            }
+        }
+        .onChange(of: scenePhase) { newPhase in
+            isActive = newPhase == .active
         }
     }
 }
